@@ -1,3 +1,9 @@
+## Invio.QueryProvider.Core Releases
+
+None
+
+## FSharp.MySqlQueryProvider Releases
+
 ### 1.0.9 - February 11 2018
 * Upgrade Invio.Extensions.Reflection to v1.0.8
 

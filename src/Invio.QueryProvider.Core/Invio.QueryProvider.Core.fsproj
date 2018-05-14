@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Condition="Exists('$(SolutionDir)/Common.props')" Project="$(SolutionDir)/Common.props" />
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <DebugType>portable</DebugType>
+    <PackageId>Invio.QueryProvider.Core</PackageId>
+    <AssemblyName>Invio.QueryProvider.Core</AssemblyName>
+    <Description>Core classes for implementing QueryProviders accross mutliple storage engines.</Description>
+    <Authors>Invio Inc. &lt;developers@invioinc.com&gt;</Authors>
+    <QueryProviderVersion Condition=" '$(QueryProviderVersion)'=='' ">0.0.0</QueryProviderVersion>
+    <VersionPrefix>$(QueryProviderVersion)</VersionPrefix>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="TypeHelper.fs" />
+    <Compile Include="ExpressionHelper.fs" />
+    <Compile Include="ExpressionMatching.fs" />
+    <Compile Include="Queryable.fs" />
+  </ItemGroup>
+</Project>

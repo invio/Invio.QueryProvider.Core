@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Condition="Exists('$(SolutionDir)/Common.props')" Project="$(SolutionDir)/Common.props" />
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <IsPackable>true</IsPackable>
+    <PackageId>Invio.QueryProvider.Test.CSharp</PackageId>
+    <Description>Test classes for implementing CSharp specific QueryProvider test fixtures accross mutliple storage engines.</Description>
+    <Authors>Invio Inc. &lt;developers@invioinc.com&gt;</Authors>
+    <QueryProviderVersion Condition=" '$(QueryProviderVersion)'=='' ">0.0.0</QueryProviderVersion>
+    <VersionPrefix>$(QueryProviderVersion)</VersionPrefix>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Invio.QueryProvider.Test/Invio.QueryProvider.Test.fsproj" />
+    <ProjectReference Include="../../src/Invio.QueryProvider.Core/Invio.QueryProvider.Core.fsproj" />
+  </ItemGroup>
+</Project>
