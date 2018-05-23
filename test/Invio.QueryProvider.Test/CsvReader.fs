@@ -119,7 +119,7 @@ module CsvReader =
                             trace (fun _ -> sprintf "Read value: %s" value) Some (inferType value, (newLine, newPos)))
             (line, 0)
         |> Seq.toArray
-        |> trace (fun result -> sprintf "Read values (%i): [|%s|]" result.Length (String.Join(", ", Seq.map (fun obj -> match obj with null -> "null" | _ -> obj.ToString()) result)))
+        |> trace (fun (result : obj[]) -> sprintf "Read values (%i): [|%s|]" result.Length (String.Join(", ", Seq.map (fun obj -> match obj with null -> "null" | _ -> obj.ToString()) result)))
 
     let readCsvData (source : TextReader) : seq<obj array> =
         Seq.unfold

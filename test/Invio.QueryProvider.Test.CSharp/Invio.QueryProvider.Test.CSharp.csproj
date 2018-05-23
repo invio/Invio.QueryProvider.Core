@@ -1,4 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PWD Condition=" '$(PWD)'=='' ">$(CD)</PWD>
+    <SolutionDir Condition=" '$(SolutionDir)'=='' ">$(PWD)</SolutionDir>
+  </PropertyGroup>
   <Import Condition="Exists('$(SolutionDir)/Common.props')" Project="$(SolutionDir)/Common.props" />
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
