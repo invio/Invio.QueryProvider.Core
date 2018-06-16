@@ -16,6 +16,24 @@ namespace Invio.QueryProvider.Test.CSharp {
         protected abstract IQueryable<Supplier> Suppliers { get; }
         protected abstract IQueryable<Category> Categories { get; }
 
+        private static ISet<Int32> ShipperIds { get; } = ImmutableHashSet.Create(1, 2, 3);
+
+        [Fact]
+        public void Enumerate_All() {
+            var count = 0;
+            var ids = ImmutableHashSet<Int32>.Empty;
+
+            using (var enumerator = this.Shippers.GetEnumerator()) {
+                while (enumerator.MoveNext()) {
+                    count++;
+                    ids = ids.Add(enumerator.Current.ShipperId);
+                }
+            }
+
+            Assert.Equal(3, count);
+            Assert.Equal(ShipperIds, ids);
+        }
+
         //==================================================
         // Where Clause Tests
         //==================================================
