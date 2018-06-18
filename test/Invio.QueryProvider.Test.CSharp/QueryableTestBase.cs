@@ -650,7 +650,8 @@ namespace Invio.QueryProvider.Test.CSharp {
         public virtual void OrderBy_Expression() {
             var results =
                 this.Products
-                    .OrderBy(c => c.UnitPrice * c.UnitsInStock)
+                    .Where(p => p.CategoryId == 5)
+                    .OrderBy(p => p.UnitPrice * p.UnitsInStock)
                     .ToList();
 
             Assert.Equal(
