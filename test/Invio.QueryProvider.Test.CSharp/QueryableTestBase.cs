@@ -427,6 +427,18 @@ namespace Invio.QueryProvider.Test.CSharp {
             );
         }
 
+        [Fact]
+        public virtual void Where_StringSet_Contains_CaseSensitive() {
+            var customerIds = ImmutableHashSet.Create("ALFKI", "anatr");
+
+            var results = this.Customers.Where(c => customerIds.Contains(c.CustomerId)).ToList();
+
+            AssertCustomerIdSet(
+                new[] { "ALFKI" },
+                results
+            );
+        }
+
         #endregion
 
         #region Where Clause String Comparisons
@@ -476,6 +488,35 @@ namespace Invio.QueryProvider.Test.CSharp {
             );
         }
 
+        private static String[] CustomerIdsTitleOwnerAssistant { get; } =
+            { "WILMK" };
+
+        [Fact]
+        public virtual void Where_String_Equals() {
+            var results =
+                this.Customers
+                    .Where(c => c.ContactTitle.Equals("Owner/Marketing Assistant"))
+                    .ToList();
+
+            AssertCustomerIdSet(
+                CustomerIdsTitleOwnerAssistant,
+                results
+            );
+        }
+
+        [Fact]
+        public virtual void Where_String_StaticEquals() {
+            var results =
+                this.Customers
+                    .Where(c => String.Equals(c.ContactTitle, "Owner/Marketing Assistant"))
+                    .ToList();
+
+            AssertCustomerIdSet(
+                CustomerIdsTitleOwnerAssistant,
+                results
+            );
+        }
+
         private static String[] CustomerIdsAddressContainsAveAfterPositionTen { get; } =
             { "HILAA", "LILAS", "WHITC" };
 
@@ -489,7 +530,7 @@ namespace Invio.QueryProvider.Test.CSharp {
             );
         }
 
-        private static String[] CustemrIdsWithLongAddressFields { get; } =
+        private static String[] CustomerIdsWithLongAddressFields { get; } =
             { "HILAA", "LILAS", "OCEAN" };
 
         [Fact]
@@ -497,15 +538,172 @@ namespace Invio.QueryProvider.Test.CSharp {
             var results = this.Customers.Where(c => c.Address.Length > 30).ToList();
 
             AssertCustomerIdSet(
-                CustemrIdsWithLongAddressFields,
+                CustomerIdsWithLongAddressFields,
                 results
             );
         }
 
         // TODO: write tests for explicit Ordinal and OrdinalIgnoreCase comparisons, which should
-        // be prefered since with the methods tested here the collations will be the environment
+        // be preferred since with the methods tested here the collations will be the environment
         // defaults, which could differ between the execution environment and the query engine
         // environment.
+
+        private static Int32[] ProductIdsEndingInSpreadIgnoreCase { get; } =
+            { 6, 63 };
+
+        [Theory]
+        [InlineData(StringComparison.OrdinalIgnoreCase)]
+        [InlineData(StringComparison.InvariantCultureIgnoreCase)]
+        public virtual void Where_String_EndsWith_CaseInSensitive(StringComparison comparison) {
+            var results =
+                this.Products.Where(p => p.ProductName.EndsWith("Spread", comparison)).ToList();
+
+            AssertProductIdSet(
+                ProductIdsEndingInSpreadIgnoreCase,
+                results
+            );
+        }
+
+        private static Int32[] ProductIdsEndingInSpreadCaseSensitive { get; } =
+            { 6 };
+
+        [Fact]
+        public virtual void Where_String_EndsWith_DefaultsToCaseSensitive() {
+            var results =
+                this.Products.Where(p => p.ProductName.EndsWith("Spread")).ToList();
+
+            AssertProductIdSet(
+                ProductIdsEndingInSpreadCaseSensitive,
+                results
+            );
+        }
+
+        [Theory]
+        [InlineData(StringComparison.Ordinal)]
+        [InlineData(StringComparison.InvariantCulture)]
+        public virtual void Where_String_EndsWith_CaseSensitive(StringComparison comparison) {
+            var results =
+                this.Products.Where(p => p.ProductName.EndsWith("Spread", comparison)).ToList();
+
+            AssertProductIdSet(
+                ProductIdsEndingInSpreadCaseSensitive,
+                results
+            );
+        }
+
+        private static String[] CustomerIdsWIthCompanyNamesContainingQU =
+            { "ANTON", "FAMIA", "QUEDE", "QUEEN", "QUICK" };
+
+        [Theory]
+        [InlineData(StringComparison.OrdinalIgnoreCase)]
+        [InlineData(StringComparison.InvariantCultureIgnoreCase)]
+        public virtual void Where_String_Contains_CaseInsensitive(StringComparison comparison) {
+            var results = this.Customers.Where(c => c.CompanyName.Contains("qu", comparison)).ToList();
+
+            AssertCustomerIdSet(
+                CustomerIdsWIthCompanyNamesContainingQU,
+                results
+            );
+        }
+
+        private static String[] CustomerIdsWithCompanyNamesContainingQULowerCase =
+            { "ANTON", "FAMIA" };
+
+        [Fact]
+        public virtual void Where_String_Contains_DefaultsToCaseSensitive() {
+            var results = this.Customers.Where(c => c.CompanyName.Contains("qu")).ToList();
+
+            AssertCustomerIdSet(
+                CustomerIdsWithCompanyNamesContainingQULowerCase,
+                results
+            );
+        }
+
+        [Theory]
+        [InlineData(StringComparison.Ordinal)]
+        [InlineData(StringComparison.InvariantCulture)]
+        public virtual void Where_String_Contains_CaseSensitive(StringComparison comparison) {
+            var results = this.Customers.Where(c => c.CompanyName.Contains("qu", comparison)).ToList();
+
+            AssertCustomerIdSet(
+                CustomerIdsWithCompanyNamesContainingQULowerCase,
+                results
+            );
+        }
+
+        [Theory]
+        [InlineData("ANTON", new[] { "ANTON" })]
+        [InlineData("anton", new String[0])]
+        public virtual void Where_String_EqualsOperator_DefaultsToCaseSensitive(
+            String query,
+            String[] expectedResult) {
+
+            var results = this.Customers.Where(c => c.CustomerId == query).ToList();
+
+            AssertCustomerIdSet(expectedResult, results);
+        }
+
+        public static IEnumerable<Object[]> EqualsFunction_Defaults_Arguments { get; } = new[] {
+            new Object[] { "ANTON", new[] { "ANTON" } },
+            new Object[] { "anton", new String[0] }
+        };
+
+        [Theory]
+        [MemberData(nameof(EqualsFunction_Defaults_Arguments))]
+        public virtual void Where_String_EqualsFunction_DefaultsToCaseSensitive(
+            String query,
+            String[] expectedResult) {
+
+            var results = this.Customers.Where(c => c.CustomerId.Equals(query)).ToList();
+
+            AssertCustomerIdSet(expectedResult, results);
+        }
+
+        [Theory]
+        [MemberData(nameof(EqualsFunction_Defaults_Arguments))]
+        public virtual void Where_String_StaticEqualsFunction_DefaultsToCaseSensitive(
+            String query,
+            String[] expectedResult) {
+
+            var results = this.Customers.Where(c => String.Equals(c.CustomerId, query)).ToList();
+
+            AssertCustomerIdSet(expectedResult, results);
+        }
+
+        public static IEnumerable<Object[]> EqualsFunction_CaseSensitivity_Arguments { get; } = new[] {
+            new Object[] { "ANTON", StringComparison.Ordinal, new[] { "ANTON" } },
+            new Object[] { "ANTON", StringComparison.InvariantCulture, new[] { "ANTON" } },
+            new Object[] { "anton", StringComparison.Ordinal, new String[0] },
+            new Object[] { "anton", StringComparison.InvariantCulture, new String[0] },
+            new Object[] { "anton", StringComparison.OrdinalIgnoreCase, new[] { "ANTON" } },
+            new Object[] { "anton", StringComparison.InvariantCultureIgnoreCase, new[] { "ANTON" } },
+        };
+
+        [Theory]
+        [MemberData(nameof(EqualsFunction_CaseSensitivity_Arguments))]
+        public virtual void Where_String_EqualsFunction_CaseSensitivity(
+            String query,
+            StringComparison comparison,
+            String[] expectedResult) {
+
+            var results =
+                this.Customers.Where(c => c.CustomerId.Equals(query, comparison)).ToList();
+
+            AssertCustomerIdSet(expectedResult, results);
+        }
+
+        [Theory]
+        [MemberData(nameof(EqualsFunction_CaseSensitivity_Arguments))]
+        public virtual void Where_String_StaticEqualsFunction_CaseSensitivity(
+            String query,
+            StringComparison comparison,
+            String[] expectedResult) {
+
+            var results =
+                this.Customers.Where(c => String.Equals(c.CustomerId, query, comparison)).ToList();
+
+            AssertCustomerIdSet(expectedResult, results);
+        }
 
         #endregion
 
