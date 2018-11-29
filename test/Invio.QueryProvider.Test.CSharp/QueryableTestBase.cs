@@ -428,13 +428,51 @@ namespace Invio.QueryProvider.Test.CSharp {
         }
 
         [Fact]
-        public virtual void Where_StringSet_Contains_CaseSensitive() {
-            var customerIds = ImmutableHashSet.Create("ALFKI", "anatr");
+        public virtual void Where_StringArray_Contains_DefaultsToCaseSensitive() {
+            ISet<String> customerIds = ImmutableHashSet.Create("ALFKI", "anatr");
 
             var results = this.Customers.Where(c => customerIds.Contains(c.CustomerId)).ToList();
 
             AssertCustomerIdSet(
                 new[] { "ALFKI" },
+                results
+            );
+        }
+
+        public static IEnumerable<Object[]> CaseSensitiveStringComparers = new[] {
+            new Object[] { StringComparer.Ordinal },
+            new Object[] { StringComparer.InvariantCulture },
+        };
+
+        [Theory]
+        [MemberData(nameof(CaseSensitiveStringComparers))]
+        public virtual void Where_StringArray_Contains_CaseSensitive(StringComparer comparer) {
+            var customerIds = new[] { "ALFKI", "anatr" };
+
+            var results =
+                this.Customers.Where(c => customerIds.Contains(c.CustomerId, comparer)).ToList();
+
+            AssertCustomerIdSet(
+                new[] { "ALFKI" },
+                results
+            );
+        }
+
+        public static IEnumerable<Object[]> CaseInsensitiveStringComparers = new[] {
+            new Object[] { StringComparer.OrdinalIgnoreCase },
+            new Object[] { StringComparer.InvariantCultureIgnoreCase },
+        };
+
+        [Theory]
+        [MemberData(nameof(CaseInsensitiveStringComparers))]
+        public virtual void Where_StringArray_Contains_CaseInsensitive(StringComparer comparer) {
+            var customerIds = new[] { "ALFKI", "anatr" };
+
+            var results =
+                this.Customers.Where(c => customerIds.Contains(c.CustomerId, comparer)).ToList();
+
+            AssertCustomerIdSet(
+                new[] { "ALFKI", "ANATR" },
                 results
             );
         }

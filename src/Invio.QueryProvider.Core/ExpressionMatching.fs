@@ -83,7 +83,7 @@ let (|CallIEnumerable|_|) (e : Expression) =
             makeMemberReturn m (m.Object :?> MemberExpression) (m.Arguments |> Seq.toList)
         | _ -> None
 
-    | Some m when(m.Arguments.Count = 2) ->
+    | Some m when(m.Arguments.Count >= 2) ->
         let firstArg = m.Arguments |> Seq.head
         let args = m.Arguments |> Seq.toList |> List.skip(1)
         match firstArg with
