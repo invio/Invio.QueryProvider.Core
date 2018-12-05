@@ -429,7 +429,7 @@ namespace Invio.QueryProvider.Test.CSharp {
 
         [Fact]
         public virtual void Where_StringArray_Contains_DefaultsToCaseSensitive() {
-            ISet<String> customerIds = ImmutableHashSet.Create("ALFKI", "anatr");
+            var customerIds = new[] { "ALFKI", "anatr" };
 
             var results = this.Customers.Where(c => customerIds.Contains(c.CustomerId)).ToList();
 
@@ -470,6 +470,51 @@ namespace Invio.QueryProvider.Test.CSharp {
 
             var results =
                 this.Customers.Where(c => customerIds.Contains(c.CustomerId, comparer)).ToList();
+
+            AssertCustomerIdSet(
+                new[] { "ALFKI", "ANATR" },
+                results
+            );
+        }
+
+        [Fact]
+        public virtual void Where_StringSet_Contains_DefaultsToCaseSensitive() {
+            ISet<String> customerIds = ImmutableHashSet.Create("ALFKI", "anatr");
+
+            var results = this.Customers.Where(c => customerIds.Contains(c.CustomerId)).ToList();
+
+            AssertCustomerIdSet(
+                new[] { "ALFKI" },
+                results
+            );
+        }
+
+        [Theory]
+        [MemberData(nameof(CaseSensitiveStringComparers))]
+        public virtual void Where_StringSet_Contains_CaseSensitive(StringComparer comparer) {
+            ISet<String> customerIds = ImmutableHashSet.Create("ALFKI", "anatr");
+
+            var results =
+                this.Customers.Where(c => customerIds.Contains(c.CustomerId, comparer)).ToList();
+
+            AssertCustomerIdSet(
+                new[] { "ALFKI" },
+                results
+            );
+        }
+
+        public static IEnumerable<Object[]> CustomerIdSetALFKIanatr { get; } = new[] {
+            new Object[] { ImmutableHashSet.Create("ALFKI", "anatr") }
+        };
+
+        [Theory]
+        [MemberData(nameof(CustomerIdSetALFKIanatr))]
+        public virtual void Where_StringSetArgument_Contains_OrdinalIgnoreCase(ISet<String> customerIds) {
+            var results =
+                this.Customers
+                    .Where(c =>
+                        customerIds.Contains(c.CustomerId, StringComparer.OrdinalIgnoreCase))
+                    .ToList();
 
             AssertCustomerIdSet(
                 new[] { "ALFKI", "ANATR" },
