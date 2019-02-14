@@ -17,6 +17,12 @@ type Data() =
         | (value : obj) when (value :? string) -> value :?> string
         | value -> value.ToString()
 
+    let maybeFn (fn : 'x -> 'y) =
+        fun (x : 'x) ->
+            match x with
+                | null -> null
+                | _ -> (fn x)
+
     let toDecimal = function
         | (value : obj) when (value :? decimal) -> value :?> decimal
         | (value : obj) when (value :? double) -> (decimal (value :?> double))
@@ -113,7 +119,7 @@ type Data() =
                         (toString region)
                         (toString postalCode)
                         (toString country)
-                        (toString homePhone)
+                        (homePhone |> toString |> maybeFn PhoneNumber.Parse)
                         (toString extension)
                         (photo :?> byte[])
                         (toString notes)

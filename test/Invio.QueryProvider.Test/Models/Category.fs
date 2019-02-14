@@ -7,8 +7,8 @@ type Category = {
     Picture : byte[]
 } with
     static member Create id name description picture = {
-        CategoryId = id;
-        CategoryName = name;
-        Description = description;
+        CategoryId = id
+        CategoryName = name
+        Description = description
         Picture = picture
     }

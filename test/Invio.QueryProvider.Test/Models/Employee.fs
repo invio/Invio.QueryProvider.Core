@@ -15,7 +15,7 @@ type Employee = {
     Region : string
     PostalCode : string
     Country : string
-    HomePhone : string
+    HomePhone : PhoneNumber
     Extension : string
     Photo : byte[]
     Notes : string
