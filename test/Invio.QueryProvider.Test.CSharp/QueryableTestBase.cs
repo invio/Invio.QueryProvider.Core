@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Linq.Expressions;
 using Invio.QueryProvider.Test.Models;
@@ -1531,6 +1532,28 @@ namespace Invio.QueryProvider.Test.CSharp {
         //==================================================
 
         // TODO: Implement sub-query tests
+
+        //==================================================
+        // Custom Type Tests
+        //==================================================
+
+        [Fact]
+        public virtual void CustomPropertyType_Hydrated() {
+            var employee = this.Employees.Where(c => c.EmployeeId == 1).Single();
+
+            Assert.NotNull(employee.HomePhone);
+            Assert.Equal(206, employee.HomePhone.AreaCode);
+        }
+
+        [Fact]
+        public virtual void CustomPropertyType_Comparison() {
+            var testEmployee = this.Employees.First();
+            var testEmployeePhone = testEmployee.HomePhone;
+
+            var employee = this.Employees.Where(e => e.HomePhone == testEmployeePhone).Single();
+
+            Assert.Equal(testEmployee.EmployeeId, employee.EmployeeId);
+        }
 
         //==================================================
         // Helper Functions
