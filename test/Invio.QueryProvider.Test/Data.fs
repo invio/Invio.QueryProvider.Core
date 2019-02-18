@@ -23,6 +23,12 @@ type Data() =
                 | null -> null
                 | _ -> (fn x)
 
+    let maybeFnNullable (fn : 'x -> 'y) =
+        fun (x : 'x) ->
+            match x with
+                | null -> new Nullable<'y>()
+                | _ -> new Nullable<'y>(fn x)
+
     let toDecimal = function
         | (value : obj) when (value :? decimal) -> value :?> decimal
         | (value : obj) when (value :? double) -> (decimal (value :?> double))
@@ -277,7 +283,7 @@ type Data() =
                         (toString country)
                         (toString phone)
                         (toString fax)
-                        (toString homePage)
+                        (homePage :?> String |> maybeFnNullable Hyperlink.Parse)
                 | _ ->
                     raise (
                         new InvalidDataException(

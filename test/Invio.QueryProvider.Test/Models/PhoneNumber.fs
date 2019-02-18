@@ -25,6 +25,12 @@ type PhoneNumber(areaCode : int, prefix : int, suffix : int) =
             | :? PhoneNumber as p -> (areaCode, prefix, suffix) = (p.AreaCode, p.Prefix, p.Suffix)
             | _ -> false
 
+    static member op_Equality (p1: PhoneNumber, p2: PhoneNumber) =
+        p1 = p2
+
+    static member op_Inequality (p1: PhoneNumber, p2: PhoneNumber) =
+        p1 <> p2
+
     static member public Parse(str : String) : PhoneNumber =
         match PhoneNumber.phoneRegex.Match(str) with
             | m when m.Success ->

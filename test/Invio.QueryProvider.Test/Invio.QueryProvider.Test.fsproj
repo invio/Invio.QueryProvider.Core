@@ -31,6 +31,7 @@
   <ItemGroup>
     <Compile Include="ExpressionTest.fs" />
     <Compile Include="Models\PhoneNumber.fs" />
+    <Compile Include="Models\Hyperlink.fs" />
     <Compile Include="Models\Category.fs" />
     <Compile Include="Models\Customer.fs" />
     <Compile Include="Models\Employee.fs" />

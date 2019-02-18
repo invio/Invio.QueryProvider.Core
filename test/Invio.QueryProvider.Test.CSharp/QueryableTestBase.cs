@@ -1388,7 +1388,7 @@ namespace Invio.QueryProvider.Test.CSharp {
             var result =
                 this.Suppliers
                     .Where(p => p.SupplierId == 2)
-                    .Select(p => p.HomePage.TrimStart('#'))
+                    .Select(p => ((String)p.HomePage).TrimStart('#'))
                     .Single();
 
             Assert.Equal("CAJUN.HTM#", result);
@@ -1399,7 +1399,7 @@ namespace Invio.QueryProvider.Test.CSharp {
             var result =
                 this.Suppliers
                     .Where(p => p.SupplierId == 2)
-                    .Select(p => p.HomePage.TrimEnd('#'))
+                    .Select(p => ((String)p.HomePage).TrimEnd('#'))
                     .Single();
 
             Assert.Equal("#CAJUN.HTM", result);
@@ -1410,7 +1410,7 @@ namespace Invio.QueryProvider.Test.CSharp {
             var result =
                 this.Suppliers
                     .Where(p => p.SupplierId == 2)
-                    .Select(p => p.HomePage.Trim('#'))
+                    .Select(p => ((String)p.HomePage).Trim('#'))
                     .Single();
 
             Assert.Equal("CAJUN.HTM", result);
@@ -1423,7 +1423,7 @@ namespace Invio.QueryProvider.Test.CSharp {
             var result =
                 this.Suppliers
                     .Where(p => p.SupplierId == 6)
-                    .Select(p => p.HomePage.Substring(p.HomePage.IndexOf('#')))
+                    .Select(p => ((String)p.HomePage).Substring(((String)p.HomePage).IndexOf('#')))
                     .Single();
 
             Assert.Equal("#http://www.microsoft.com/accessdev/sampleapps/mayumi.htm#", result);
@@ -1553,6 +1553,45 @@ namespace Invio.QueryProvider.Test.CSharp {
             var employee = this.Employees.Where(e => e.HomePhone == testEmployeePhone).Single();
 
             Assert.Equal(testEmployee.EmployeeId, employee.EmployeeId);
+        }
+
+        [Fact]
+        public virtual void CustomNullablePropertyType_Hydrated() {
+            var australianSuppliers =
+                this.Suppliers
+                    .Where(s => s.Country.Equals("Australia", StringComparison.OrdinalIgnoreCase))
+                    .OrderBy(s => s.SupplierId)
+                    .ToList();
+
+            Assert.Equal(new[] { 7, 24 }, australianSuppliers.Select(s => s.SupplierId).ToArray());
+            Assert.False(australianSuppliers[0].HomePage.HasValue);
+            Assert.Equal(
+                new Hyperlink(
+                    "G'day Mate (on the World Wide Web)",
+                    new Uri("http://www.microsoft.com/accessdev/sampleapps/gdaymate.htm")),
+                australianSuppliers[1].HomePage
+            );
+        }
+
+        [Fact]
+        public virtual void CustomNullablePropertyType_Comparison_Value() {
+            Hyperlink? testHyperlink = new Hyperlink(null, new Uri("CAJUN.HTM", UriKind.Relative));
+            var testSupplier = this.Suppliers.Where(s => s.SupplierId == 2).Single();
+
+            var supplier = this.Suppliers.Where(s => s.HomePage == testHyperlink).Single();
+
+            Assert.Equal(testSupplier.SupplierId, supplier.SupplierId);
+        }
+
+        [Fact]
+        public virtual void CustomNullablePropertyType_Comparison_Null() {
+            var supplier =
+                this.Suppliers.Where(s =>
+                        s.HomePage == null &&
+                        s.Country.Equals("Australia", StringComparison.OrdinalIgnoreCase))
+                    .Single();
+
+            Assert.Equal(7, supplier.SupplierId);
         }
 
         //==================================================

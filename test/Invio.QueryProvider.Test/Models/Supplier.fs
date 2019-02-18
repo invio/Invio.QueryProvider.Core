@@ -14,7 +14,7 @@ type Supplier = {
     Country : string
     Phone : string
     Fax : string
-    HomePage : string
+    HomePage : Nullable<Hyperlink>
 } with
     static member Create id companyName contactName contactTitle address city region postalCode country phone fax homePage = {
         SupplierId = id;
